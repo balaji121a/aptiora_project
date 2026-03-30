@@ -1136,6 +1136,7 @@ function addUser(){
 function openEditUser(reg){
   let u=getUsers()[reg];
   showModal("✏️ Edit User",`
+    <div class="form-group"><label class="form-label">Register No</label><input class="form-input" id="e_reg" value="${reg}" placeholder="New Register No"></div>
     <div class="form-group"><label class="form-label">Name</label><input class="form-input" id="e_name" value="${u.name}"></div>
     <div class="form-group"><label class="form-label">Password</label><input class="form-input" id="e_pass" value="${u.password}"></div>
     <div class="form-group"><label class="form-label">Department</label><input class="form-input" id="e_dept" value="${u.dept||'IT'}"></div>
@@ -1148,10 +1149,26 @@ function openEditUser(reg){
 
 function saveEditUser(reg){
   let users=getUsers();
-  users[reg].name=document.getElementById("e_name").value;
-  users[reg].password=document.getElementById("e_pass").value;
-  users[reg].dept=document.getElementById("e_dept").value;
-  users[reg].batch=document.getElementById("e_batch").value;
+  let newReg=document.getElementById("e_reg").value.trim();
+  let userData={
+    name:document.getElementById("e_name").value,
+    password:document.getElementById("e_pass").value,
+    dept:document.getElementById("e_dept").value,
+    batch:document.getElementById("e_batch").value,
+    active:users[reg].active!==false
+  };
+  if(newReg && newReg !== reg){
+    delete users[reg];
+    users[newReg]=userData;
+    saveUsers(users);closeModal();renderUsers();
+    logActivity("Register No changed: "+reg+" → "+newReg,"#f59e0b");
+    showNotif("✅ Register No updated!","success");
+    return;
+  }
+  users[reg].name=userData.name;
+  users[reg].password=userData.password;
+  users[reg].dept=userData.dept;
+  users[reg].batch=userData.batch;
   saveUsers(users);closeModal();renderUsers();
   logActivity(`User updated: ${users[reg].name}`,"#f59e0b");
   showNotif("✅ User updated!","success");
