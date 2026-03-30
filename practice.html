@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Aptitude Practice</title>
+
+<style>
+body{
+  margin:0;
+  font-family:Poppins;
+  background:#f5f7fb;
+}
+
+.main{
+  display:flex;
+}
+
+/* LEFT MENU */
+.sidebar{
+  width:230px;
+  background:#fff;
+  padding:15px;
+  height:100vh;
+  box-shadow:0 0 10px rgba(0,0,0,0.1);
+}
+
+.menu-box{
+  background:#f1f5f9;
+  padding:15px;
+  border-radius:10px;
+  margin-bottom:15px;
+  cursor:pointer;
+}
+
+.menu-box.active{
+  background:#93c5fd;
+}
+
+/* RIGHT */
+.content{
+  flex:1;
+  padding:20px;
+}
+
+.top-card{
+  background:#fff;
+  padding:15px;
+  border-radius:10px;
+  box-shadow:0 5px 15px rgba(0,0,0,0.1);
+}
+
+.table-card{
+  margin-top:20px;
+  background:#fff;
+  border-radius:10px;
+  padding:15px;
+  box-shadow:0 5px 15px rgba(0,0,0,0.1);
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+}
+
+th{
+  background:#2b6cb0;
+  color:white;
+  padding:10px;
+}
+
+td{
+  padding:12px;
+  border-bottom:1px solid #ddd;
+}
+
+.start-btn{
+  background:#3b82f6;
+  color:white;
+  border:none;
+  padding:8px 14px;
+  border-radius:6px;
+  cursor:pointer;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="main">
+
+<!-- LEFT -->
+<div class="sidebar">
+
+  <div class="menu-box active">
+    Verbal Ability
+  </div>
+
+  <div class="menu-box">
+    Algebra
+  </div>
+
+  <div class="menu-box">
+    Series & Sequence
+  </div>
+
+</div>
+
+<!-- RIGHT -->
+<div class="content">
+
+<div class="top-card">
+  <h3>Verbal Ability › Aptitude Course</h3>
+  <p>Start Date: 25 Mar 2026 to End Date: 05 Apr 2026</p>
+</div>
+
+<div class="table-card">
+
+<table>
+<tr>
+  <th>Practice</th>
+  <th>Total</th>
+  <th>Solved</th>
+  <th>Remaining</th>
+  <th>Action</th>
+</tr>
+
+<tr>
+  <td>Practice</td>
+  <td>10</td>
+  <td>0</td>
+  <td>10</td>
+  <td>
+    <button class="start-btn" onclick="openTest()">Start Practise</button>
+  </td>
+</tr>
+
+</table>
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+// 👉 OPEN TEST PAGE
+function openTest(){
+  localStorage.setItem("topic", "Verbal Ability");
+  localStorage.setItem("mode", "practice");
+  window.location.href = "test.html";
+}
+</script>
+
+</body>
+</html>

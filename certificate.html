@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Certificate — APTIORA</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<link rel="stylesheet" href="certificate.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+</head>
+<body class="center">
+
+<div id="certSection" style="width:100%;display:flex;flex-direction:column;align-items:center;">
+
+  <!-- CERTIFICATE CARD -->
+  <div id="certificate" class="card">
+    <span class="corner-star tl">✦</span>
+    <span class="corner-star tr">✦</span>
+    <span class="corner-star bl">✦</span>
+    <span class="corner-star br">✦</span>
+
+    <div class="cert-header">
+      <h2>CERTIFICATE</h2>
+    </div>
+
+    <div class="medal-display" id="medalDisplay"></div>
+
+    <div class="cert-body">
+      <p>This is to proudly certify that</p>
+      <div class="cert-name" id="certName"></div>
+      <div class="rank-badge" id="rankBadge"></div>
+      <p class="cert-msg" id="certMsg"></p>
+      <div class="cert-meta">
+        <div class="meta-pill">📊 Score: <strong id="certScore"></strong></div>
+        <div class="meta-pill">📅 <span id="certDate"></span></div>
+        <div class="meta-pill">🏫 APTIORA Exam System</div>
+      </div>
+    </div>
+
+    <div class="cert-footer">
+      <div class="sig-block">
+        <div class="sig-line"></div>
+        <div class="sig-label">Examiner Signature</div>
+      </div>
+      <div class="sig-block">
+        <div class="sig-line"></div>
+        <div class="sig-label">Director, APTIORA</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="btn-row">
+    <button class="action-btn dl-btn" id="dlBtn" onclick="downloadPDF()">⬇ Download Certificate</button>
+    <button class="action-btn back-btn" onclick="goBack()">🏆 Back to Leaderboard</button>
+  </div>
+</div>
+
+<div id="notEligible" class="not-eligible" style="display:none;">
+  <div style="font-size:64px;margin-bottom:16px;">⚠️</div>
+  <h2>Not Eligible for Certificate</h2>
+  <p>You need to attempt at least <strong>15 questions</strong> to receive a certificate.</p>
+  <p>Your attempts: <strong id="attemptedCount"></strong> / 20</p>
+  <br>
+  <button class="action-btn back-btn" onclick="goBack()" style="margin-top:10px;">⬅ Back to Leaderboard</button>
+</div>
+
+<script>
+let reg = localStorage.getItem("username");
+let rank = parseInt(localStorage.getItem("rank")) || 0;
+let score = parseInt(localStorage.getItem("cert_score")) || 0;
+let attempted = parseInt(localStorage.getItem("cert_attempted")) || 0;
+
+function getUsers(){
+  return JSON.parse(localStorage.getItem("users")) || {
+    "714524205005":{name:"Balaji"}, "714524205053":{name:"Vicky"},
+    "714524205027":{name:"Ismail"}, "714524205041":{name:"Sakthivel"}
+  };
+}
+let users = getUsers();
+let name = (users[reg]||{}).name || "Student";
+
+// Check admin setting for download
+let settings = JSON.parse(localStorage.getItem("adminSettings")) || {};
+let downloadEnabled = settings.certDownload !== false; // default ON
+
+if(attempted < 15){
+  document.getElementById("certSection").style.display = "none";
+  document.getElementById("notEligible").style.display = "block";
+  document.getElementById("attemptedCount").innerText = attempted;
+} else {
+  // Set content
+  document.getElementById("certName").innerText = name;
+  document.getElementById("certScore").innerText = score + " / 20";
+  document.getElementById("certDate").innerText = new Date().toLocaleDateString('en-IN', {day:'numeric',month:'long',year:'numeric'});
+
+  let card = document.getElementById("certificate");
+  let medal = document.getElementById("medalDisplay");
+  let badge = document.getElementById("rankBadge");
+  let msg = document.getElementById("certMsg");
+
+  if(rank === 1){
+    card.classList.add("rank-1");
+    medal.innerText = "🥇";
+    badge.innerText = "🏆 1st Place — Gold";
+    msg.innerText = "has achieved the Highest Score in the Assessment";
+  } else if(rank === 2){
+    card.classList.add("rank-2");
+    medal.innerText = "🥈";
+    badge.innerText = "🥈 2nd Place — Silver";
+    msg.innerText = "has achieved an Outstanding Performance in the Assessment";
+  } else if(rank === 3){
+    card.classList.add("rank-3");
+    medal.innerText = "🥉";
+    badge.innerText = "🥉 3rd Place — Bronze";
+    msg.innerText = "has achieved an Excellent Performance in the Assessment";
+  } else {
+    card.classList.add("participate");
+    medal.innerText = "🎓";
+    badge.innerText = "🎓 Participation Certificate";
+    msg.innerText = "has successfully participated and completed the Assessment";
+  }
+
+  // Download button state
+  let dlBtn = document.getElementById("dlBtn");
+  if(!downloadEnabled){
+    dlBtn.disabled = true;
+    dlBtn.innerText = "⛔ Download Disabled by Admin";
+  }
+
+  // Auto confetti
+  setTimeout(()=>{
+    confetti({particleCount:150, spread:80, origin:{y:0.6}});
+    if(rank <= 3 && rank > 0){
+      setTimeout(()=>confetti({particleCount:80, angle:60, spread:55, origin:{x:0}}), 600);
+      setTimeout(()=>confetti({particleCount:80, angle:120, spread:55, origin:{x:1}}), 800);
+    }
+  }, 500);
+}
+
+async function downloadPDF(){
+  let settings = JSON.parse(localStorage.getItem("adminSettings")) || {};
+  if(settings.certDownload === false){
+    alert("⛔ Certificate download is disabled by admin.");return;
+  }
+  confetti({particleCount:100, spread:70, origin:{y:0.6}});
+  const {jsPDF} = window.jspdf;
+  let el = document.getElementById("certificate");
+  // Temporarily hide buttons for clean capture
+  document.querySelector(".btn-row").style.display = "none";
+  let canvas = await html2canvas(el, {scale:2, useCORS:true, backgroundColor:"#ffffff"});
+  document.querySelector(".btn-row").style.display = "flex";
+  let img = canvas.toDataURL("image/png");
+  let pdf = new jsPDF('landscape','px',[canvas.width/2, canvas.height/2]);
+  pdf.addImage(img,'PNG',0,0,canvas.width/2,canvas.height/2);
+  pdf.save("Certificate_"+name+"_APTIORA.pdf");
+}
+
+function goBack(){ location.href = "leaderboard.html"; }
+</script>
+</body>
+</html>

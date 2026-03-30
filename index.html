@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>APTIORA — Online Exam System</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap');
+*{margin:0;padding:0;box-sizing:border-box;}
+body{
+  font-family:'Poppins',sans-serif;height:100vh;overflow:hidden;
+  display:flex;justify-content:center;align-items:center;
+  background:linear-gradient(-45deg,#667eea,#764ba2,#6366f1,#2193b0);
+  background-size:400% 400%;animation:bg 8s ease infinite;
+}
+@keyframes bg{0%{background-position:0% 50%;}50%{background-position:100% 50%;}100%{background-position:0% 50%;}}
+canvas{position:fixed;inset:0;pointer-events:none;z-index:1;}
+.box{
+  position:relative;z-index:10;
+  background:rgba(255,255,255,0.13);backdrop-filter:blur(18px);
+  border-radius:24px;padding:52px 44px;text-align:center;color:white;
+  box-shadow:0 20px 60px rgba(0,0,0,0.25);
+  animation:up 1s ease;border:1px solid rgba(255,255,255,0.2);
+}
+@keyframes up{from{opacity:0;transform:translateY(32px);}to{opacity:1;transform:translateY(0);}}
+h1{font-size:clamp(32px,6vw,52px);font-weight:800;letter-spacing:3px;
+  background:linear-gradient(135deg,#fff,#a5b4fc);-webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;}
+p{font-size:16px;color:rgba(255,255,255,0.8);margin:10px 0 36px;}
+.btn{
+  display:block;width:200px;margin:0 auto;
+  padding:14px;border:none;border-radius:14px;
+  background:linear-gradient(135deg,#6366f1,#8b5cf6);
+  color:white;font-size:16px;font-weight:700;cursor:pointer;
+  font-family:'Poppins',sans-serif;transition:0.3s;
+  box-shadow:0 8px 24px rgba(99,102,241,0.4);
+  position:relative;overflow:hidden;
+}
+.btn:hover{transform:translateY(-3px);box-shadow:0 12px 30px rgba(99,102,241,0.5);}
+.ripple{position:absolute;border-radius:50%;background:rgba(255,255,255,0.4);
+  transform:scale(0);animation:rip 0.6s linear;pointer-events:none;}
+@keyframes rip{to{transform:scale(4);opacity:0;}}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div class="box" id="box">
+  <h1>APTIORA</h1>
+  <p>Online Exam System</p>
+  <button class="btn" id="startBtn">Start Now</button>
+</div>
+<script>
+document.getElementById("startBtn").addEventListener("click",e=>{
+  let b=e.currentTarget,r=b.getBoundingClientRect();
+  let s=document.createElement("span");s.className="ripple";
+  let sz=Math.max(r.width,r.height);
+  s.style.cssText=`width:${sz}px;height:${sz}px;left:${e.clientX-r.left-sz/2}px;top:${e.clientY-r.top-sz/2}px;`;
+  b.appendChild(s);setTimeout(()=>s.remove(),600);
+  document.getElementById("box").style.opacity=0;
+  document.getElementById("box").style.transform="scale(0.95)";
+  document.getElementById("box").style.transition="0.5s";
+  setTimeout(()=>location.href="login.html",500);
+});
+// particles
+const cv=document.getElementById("c"),ctx=cv.getContext("2d");
+let W=cv.width=innerWidth,H=cv.height=innerHeight;
+let P=Array.from({length:70},()=>({x:Math.random()*W,y:Math.random()*H,r:Math.random()*3+1,dx:(Math.random()-.5)*.6,dy:(Math.random()-.5)*.6}));
+const mouse={x:null,y:null};
+addEventListener("mousemove",e=>{mouse.x=e.clientX;mouse.y=e.clientY;});
+function draw(){
+  ctx.clearRect(0,0,W,H);
+  P.forEach(p=>{
+    p.x+=p.dx;p.y+=p.dy;
+    if(p.x<0||p.x>W)p.dx*=-1;if(p.y<0||p.y>H)p.dy*=-1;
+    if(mouse.x){let dx=p.x-mouse.x,dy=p.y-mouse.y,d=Math.sqrt(dx*dx+dy*dy);if(d<80){p.x+=dx*.04;p.y+=dy*.04;}}
+    ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle="rgba(255,255,255,0.7)";ctx.fill();
+  });
+  for(let i=0;i<P.length;i++)for(let j=i+1;j<P.length;j++){
+    let dx=P[i].x-P[j].x,dy=P[i].y-P[j].y,d=Math.sqrt(dx*dx+dy*dy);
+    if(d<120){ctx.beginPath();ctx.strokeStyle=`rgba(255,255,255,${(1-d/120)*.25})`;ctx.moveTo(P[i].x,P[i].y);ctx.lineTo(P[j].x,P[j].y);ctx.stroke();}
+  }
+  requestAnimationFrame(draw);
+}
+draw();
+addEventListener("resize",()=>{W=cv.width=innerWidth;H=cv.height=innerHeight;});
+</script>
+</body>
+</html>

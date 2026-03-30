@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Aptitude Course</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+:root{--bg:#f0f4ff;--card:#fff;--text:#1e293b;--text2:#64748b;--border:#e2e8f0;--nav:#2b6cb0;}
+body.dark{--bg:#0f172a;--card:#1e293b;--text:#e2e8f0;--text2:#94a3b8;--border:#334155;--nav:#1e293b;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Poppins',sans-serif;background:var(--bg);color:var(--text);transition:0.3s;opacity:0;transform:translateY(20px);animation:enter 0.8s ease forwards;}
+@keyframes enter{to{opacity:1;transform:translateY(0);}}
+.navbar{background:var(--nav);color:white;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;}
+.nav-title{font-weight:700;font-size:16px;}
+.nav-right{display:flex;align-items:center;gap:10px;}
+.dark-btn{background:rgba(255,255,255,0.15);border:none;color:white;padding:5px 12px;border-radius:16px;cursor:pointer;font-size:13px;font-family:'Poppins',sans-serif;}
+.exit-btn{background:white;color:var(--nav);border:none;padding:7px 16px;border-radius:10px;font-weight:700;cursor:pointer;font-size:13px;font-family:'Poppins',sans-serif;transition:0.2s;}
+.exit-btn:hover{transform:scale(1.05);}
+.profile{background:white;color:var(--nav);border-radius:50%;width:34px;height:34px;display:flex;align-items:center;justify-content:center;font-weight:800;}
+.container{padding:20px;}
+.course-card{background:var(--card);border-radius:16px;padding:20px;box-shadow:0 4px 20px rgba(99,102,241,0.08);margin-bottom:20px;text-align:center;border:1px solid var(--border);opacity:0;transform:translateY(30px);animation:cardUp 0.7s ease forwards;}
+.course-card:nth-child(1){animation-delay:0.1s;}.course-card:nth-child(2){animation-delay:0.3s;}
+@keyframes cardUp{to{opacity:1;transform:translateY(0);}}
+.course-img{width:70px;height:70px;background:linear-gradient(135deg,#6366f1,#8b5cf6);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 12px;}
+.total-prog{font-size:22px;font-weight:800;color:var(--accent,#6366f1);margin-top:6px;}
+.course-table{width:100%;border-collapse:collapse;}
+.course-table th{text-align:left;padding:12px;background:var(--nav);color:white;font-size:13px;}
+.course-table td{padding:13px 12px;border-bottom:1px solid var(--border);font-size:13px;}
+tbody tr{opacity:0;transform:translateY(16px);animation:rowUp 0.5s ease forwards;}
+tbody tr:nth-child(1){animation-delay:0.4s;}tbody tr:nth-child(2){animation-delay:0.55s;}tbody tr:nth-child(3){animation-delay:0.7s;}
+@keyframes rowUp{to{opacity:1;transform:translateY(0);}}
+.topic-cell{display:flex;align-items:center;gap:8px;}
+.prog-bar{width:100%;height:7px;background:var(--border);border-radius:4px;margin-top:4px;}
+.prog-fill{height:100%;background:linear-gradient(90deg,#6366f1,#8b5cf6);border-radius:4px;transition:width 0.8s ease;}
+.pct{font-size:11px;color:var(--text2);}
+.start-btn{padding:7px 16px;border:none;border-radius:9px;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:white;cursor:pointer;font-weight:700;font-size:13px;font-family:'Poppins',sans-serif;transition:0.3s;box-shadow:0 4px 12px rgba(99,102,241,0.3);}
+.start-btn:hover{transform:scale(1.06);box-shadow:0 6px 18px rgba(99,102,241,0.4);}
+.start-btn:disabled{background:#ccc;box-shadow:none;cursor:not-allowed;transform:none;}
+.fade-out{opacity:0!important;transform:translateY(-20px)!important;transition:0.5s;}
+</style>
+</head>
+<body>
+<div class="navbar">
+  <div class="nav-title">📘 Aptitude Course</div>
+  <div class="nav-right">
+    <button class="dark-btn" onclick="toggleDark()">🌙</button>
+    <button class="exit-btn" onclick="exitPage()">🚪 Exit</button>
+    <div class="profile" id="icon"></div>
+  </div>
+</div>
+<div class="container">
+  <div class="course-card">
+    <div class="course-img">📊</div>
+    <h3>APTITUDE COURSE</h3>
+    <div id="courseDates" style="font-size:13px;color:var(--text2);margin-top:4px;">📅 25 Mar 2026 – 05 Apr 2026</div>
+    <div class="total-prog" id="totalProgress">0%</div>
+    <div style="font-size:12px;color:var(--text2);">Overall Progress</div>
+  </div>
+  <div class="course-card">
+    <table class="course-table">
+      <thead><tr><th>Topic</th><th>Schedule</th><th>Progress</th><th>Action</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><div class="topic-cell"><span id="l1">🔓</span><span>Verbal Ability</span></div></td>
+          <td><div style="font-size:12px;"><div id="d1s">25 Mar 2026</div><div id="d1e">05 Apr 2026</div></div></td>
+          <td><div class="prog-bar"><div id="p1" class="prog-fill" style="width:0%"></div></div><div class="pct" id="pct1">0%</div></td>
+          <td><button id="b1" class="start-btn" onclick="startTopic(1)">Start</button></td>
+        </tr>
+        <tr>
+          <td><div class="topic-cell"><span id="l2">🔒</span><span>Algebra</span></div></td>
+          <td><div style="font-size:12px;"><div id="d2s">25 Mar 2026</div><div id="d2e">05 Apr 2026</div></div></td>
+          <td><div class="prog-bar"><div id="p2" class="prog-fill" style="width:0%"></div></div><div class="pct" id="pct2">0%</div></td>
+          <td><button id="b2" class="start-btn" onclick="startTopic(2)" disabled>Start</button></td>
+        </tr>
+        <tr>
+          <td><div class="topic-cell"><span id="l3">🔒</span><span>Series &amp; Sequence</span></div></td>
+          <td><div style="font-size:12px;"><div id="d3s">25 Mar 2026</div><div id="d3e">05 Apr 2026</div></div></td>
+          <td><div class="prog-bar"><div id="p3" class="prog-fill" style="width:0%"></div></div><div class="pct" id="pct3">0%</div></td>
+          <td><button id="b3" class="start-btn" onclick="startTopic(3)" disabled>Start</button></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+<script>
+let reg=localStorage.getItem("username");
+function getUsers(){return JSON.parse(localStorage.getItem("users"))||{"714524205005":{name:"Balaji"},"714524205053":{name:"Vicky"},"714524205027":{name:"Ismail"},"714524205041":{name:"Sakthivel"}};}
+let users=getUsers();
+let name=(users[reg]||{}).name||"U";
+document.getElementById("icon").innerText=name.charAt(0);
+
+let settings=JSON.parse(localStorage.getItem("adminSettings"))||{};
+if(settings.courseStart) document.getElementById("courseDates").innerText=`📅 ${settings.courseStart} – ${settings.courseEnd||''}`;
+
+function toggleDark(){document.body.classList.toggle("dark");localStorage.setItem("darkMode",document.body.classList.contains("dark")?"1":"0");}
+if(localStorage.getItem("darkMode")==="1") document.body.classList.add("dark");
+
+function exitPage(){document.body.classList.add("fade-out");setTimeout(()=>location.href="dashboard.html",500);}
+
+function loadProgress(){
+  // Per-user progress keys
+  let p1=parseInt(localStorage.getItem("p1_done_"+reg))||0;
+  let p2=parseInt(localStorage.getItem("p2_done_"+reg))||0;
+  let p3=parseInt(localStorage.getItem("p3_done_"+reg))||0;
+
+  document.getElementById("p1").style.width=p1+"%";
+  document.getElementById("p2").style.width=p2+"%";
+  document.getElementById("p3").style.width=p3+"%";
+  document.getElementById("pct1").innerText=p1+"%";
+  document.getElementById("pct2").innerText=p2+"%";
+  document.getElementById("pct3").innerText=p3+"%";
+
+  // Unlock Topic 2 only when Topic 1 = 100%
+  if(p1>=100){
+    document.getElementById("l2").innerText="🔓";
+    document.getElementById("b2").disabled=false;
+    document.getElementById("b1").innerText="Redo";
+  }
+  // Unlock Topic 3 only when Topic 2 = 100%
+  if(p2>=100){
+    document.getElementById("l3").innerText="🔓";
+    document.getElementById("b3").disabled=false;
+    document.getElementById("b2").innerText="Redo";
+  }
+  if(p3>=100) document.getElementById("b3").innerText="Redo";
+
+  let total=Math.floor((p1+p2+p3)/3);
+  document.getElementById("totalProgress").innerText=total+"%";
+}
+loadProgress();
+
+function startTopic(id){
+  document.body.classList.add("fade-out");
+  setTimeout(()=>{
+    let topics=["Verbal Ability","Algebra","Series & Sequence"];
+    localStorage.setItem("topic",topics[id-1]);
+    localStorage.setItem("mode","practice");
+    localStorage.setItem("currentTopic",id);
+    location.href="test.html";
+  },500);
+}
+</script>
+</body>
+</html>

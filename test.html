@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Test — APTIORA</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+:root{--bg:#f0f4ff;--card:#fff;--text:#1e293b;--text2:#64748b;--accent:#6366f1;--border:#e2e8f0;}
+body.dark{--bg:#0f172a;--card:#1e293b;--text:#e2e8f0;--text2:#94a3b8;--border:#334155;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Poppins',sans-serif;background:var(--bg);color:var(--text);transition:0.3s;}
+#warnOverlay{position:fixed;inset:0;background:rgba(220,38,38,0.97);z-index:9999;display:none;align-items:center;justify-content:center;flex-direction:column;color:white;text-align:center;padding:30px;}
+#warnOverlay h1{font-size:32px;margin-bottom:10px;}
+.warn-count{font-size:72px;font-weight:800;margin:16px 0;}
+#fsPrompt{position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:500;display:none;align-items:center;justify-content:center;flex-direction:column;color:white;text-align:center;padding:30px;}
+#fsPrompt h2{font-size:24px;margin-bottom:10px;}
+#fsPrompt p{opacity:0.8;margin-bottom:24px;font-size:15px;}
+#fsPrompt button{padding:14px 32px;border:none;border-radius:12px;background:#6366f1;color:white;font-size:16px;font-weight:700;cursor:pointer;font-family:'Poppins',sans-serif;}
+.timer{position:fixed;top:14px;left:14px;background:#1e293b;color:#00ffff;padding:8px 16px;border-radius:12px;font-weight:700;font-size:15px;display:none;z-index:100;box-shadow:0 4px 12px rgba(0,0,0,0.3);}
+.timer.warn{color:#ff4444;animation:blink 0.5s infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:0.3;}}
+.main{display:flex;min-height:100vh;}
+.sidebar{width:70px;background:var(--card);padding:8px;min-height:100vh;overflow-y:auto;border-right:1px solid var(--border);position:sticky;top:0;height:100vh;}
+.qbox{width:44px;height:44px;margin:5px auto;display:flex;align-items:center;justify-content:center;border-radius:8px;background:var(--border);cursor:pointer;font-size:12px;font-weight:600;transition:0.2s;}
+.qbox.active{background:var(--accent);color:white;}
+.qbox.saved{background:#22c55e;color:white;}
+.content{flex:1;padding:20px 22px;}
+.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;}
+.topbar h3{font-size:15px;font-weight:700;}
+.topbar-right{display:flex;align-items:center;gap:10px;}
+.dark-toggle{display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;}
+.sw{position:relative;width:38px;height:20px;display:inline-block;}
+.sw input{opacity:0;width:0;height:0;}
+.sl{position:absolute;inset:0;background:#ccc;border-radius:20px;cursor:pointer;transition:0.3s;}
+input:checked+.sl{background:var(--accent);}
+.sl:before{content:"";position:absolute;width:14px;height:14px;border-radius:50%;background:white;bottom:3px;left:3px;transition:0.3s;}
+input:checked+.sl:before{transform:translateX(18px);}
+.end-btn{background:#ef4444;color:white;border:none;padding:8px 16px;border-radius:10px;cursor:pointer;font-weight:700;font-size:13px;font-family:'Poppins',sans-serif;}
+.q-card{background:var(--card);padding:22px;border-radius:16px;box-shadow:0 4px 20px rgba(99,102,241,0.08);border:1px solid var(--border);}
+.q-num{font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;}
+.q-text{font-size:16px;font-weight:600;margin-bottom:18px;line-height:1.5;}
+.option{margin:9px 0;padding:13px 16px;border:2px solid var(--border);border-radius:12px;cursor:pointer;transition:0.2s;font-size:14px;display:flex;align-items:center;gap:12px;}
+.option:hover{border-color:var(--accent);background:rgba(99,102,241,0.04);}
+.option.selected{border-color:#22c55e;background:#f0fdf4;}
+body.dark .option.selected{background:rgba(34,197,94,0.15);}
+.opt-letter{width:26px;height:26px;border-radius:50%;background:var(--border);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:11px;flex-shrink:0;transition:0.2s;}
+.option.selected .opt-letter{background:#22c55e;color:white;}
+.btns{display:flex;justify-content:space-between;align-items:center;margin-top:18px;}
+.nav-btn{padding:10px 20px;border:none;border-radius:10px;cursor:pointer;font-weight:700;font-size:13px;font-family:'Poppins',sans-serif;transition:0.2s;}
+.btn-prev{background:var(--border);color:var(--text);}
+.btn-next{background:var(--accent);color:white;}
+.bottom-info{margin-top:12px;font-size:13px;color:var(--text2);display:flex;gap:14px;}
+.info-pill{background:var(--card);border:1px solid var(--border);padding:6px 14px;border-radius:20px;}
+</style>
+</head>
+<body>
+<div id="warnOverlay">
+  <h1>⚠️ Tab Switch Detected!</h1>
+  <div class="warn-count" id="warnCount">1</div>
+  <p style="font-size:16px;">Return to test immediately.<br>3 violations = Auto submit!</p>
+  <button onclick="dismissWarn()" style="margin-top:20px;padding:12px 24px;border:none;border-radius:10px;background:white;color:#ef4444;font-weight:700;cursor:pointer;font-family:'Poppins',sans-serif;font-size:15px;">↩ Return to Test</button>
+</div>
+<div id="fsPrompt" style="display:none;">
+  <h2>🔒 Secure Test Mode</h2>
+  <p>Fullscreen required during assessment.<br>Do not exit fullscreen.</p>
+  <button onclick="enterFullscreen()">▶ Enter Fullscreen & Start</button>
+</div>
+<div id="timerBox" class="timer">45:00</div>
+<div class="main">
+  <div class="sidebar" id="numbers"></div>
+  <div class="content">
+    <div class="topbar">
+      <h3 id="title">Loading...</h3>
+      <div class="topbar-right">
+        <label class="dark-toggle">🌙
+          <label class="sw"><input type="checkbox" id="darkCheck" onchange="toggleMode()"><span class="sl"></span></label>
+        </label>
+        <button class="end-btn" onclick="endTest()">■ End Test</button>
+      </div>
+    </div>
+    <div class="q-card">
+      <div class="q-num" id="qNum">Question 1</div>
+      <div class="q-text" id="question"></div>
+      <div id="options"></div>
+      <div class="btns">
+        <button class="nav-btn btn-prev" onclick="prevQ()">◀ Prev</button>
+        <button class="nav-btn btn-next" onclick="nextQ()">Next ▶</button>
+      </div>
+    </div>
+    <div class="bottom-info">
+      <div class="info-pill">✅ Saved: <strong id="saved">0</strong></div>
+      <div class="info-pill">⏳ Remaining: <strong id="remain">0</strong></div>
+    </div>
+  </div>
+</div>
+<script>
+let mode=localStorage.getItem("mode")||"practice";
+let topic=localStorage.getItem("topic")||"Verbal Ability";
+let currentTopic=parseInt(localStorage.getItem("currentTopic"))||1;
+let reg=localStorage.getItem("username")||"guest";
+let settings=JSON.parse(localStorage.getItem("adminSettings"))||{assessTime:45,antiCheat:true,forceFullscreen:true,shuffleQ:true};
+let isAssessment=(mode==="assessment"&&localStorage.getItem("allowTest")==="yes");
+let answerKey="answers_"+reg+"_"+topic;
+let answers=JSON.parse(localStorage.getItem(answerKey))||{};
+
+if(localStorage.getItem("darkMode")==="1"){document.body.classList.add("dark");document.getElementById("darkCheck").checked=true;}
+function toggleMode(){document.body.classList.toggle("dark");localStorage.setItem("darkMode",document.body.classList.contains("dark")?"1":"0");}
+
+// ANTI-CHEAT
+let warnCount=0;
+if(isAssessment&&settings.antiCheat!==false){
+  document.addEventListener("visibilitychange",()=>{
+    if(document.hidden){warnCount++;showWarn();}
+  });
+}
+function showWarn(){
+  document.getElementById("warnCount").innerText=warnCount;
+  document.getElementById("warnOverlay").style.display="flex";
+  if(warnCount>=3){alert("❌ Test terminated — too many tab switches!");endTest();}
+}
+function dismissWarn(){
+  document.getElementById("warnOverlay").style.display="none";
+  if(isAssessment&&settings.forceFullscreen!==false&&!document.fullscreenElement) document.documentElement.requestFullscreen().catch(()=>{});
+}
+
+// FULLSCREEN
+if(isAssessment&&settings.forceFullscreen!==false){
+  document.getElementById("fsPrompt").style.display="flex";
+} else if(isAssessment){
+  startTimer();
+}
+function enterFullscreen(){
+  document.documentElement.requestFullscreen().then(()=>{
+    document.getElementById("fsPrompt").style.display="none";startTimer();
+  }).catch(()=>{document.getElementById("fsPrompt").style.display="none";startTimer();});
+}
+document.addEventListener("fullscreenchange",()=>{
+  if(isAssessment&&!document.fullscreenElement&&document.getElementById("warnOverlay").style.display!=="flex"){
+    warnCount++;showWarn();
+  }
+});
+
+// TIMER
+function startTimer(){
+  let time=(parseInt(settings.assessTime)||45)*60;
+  let box=document.getElementById("timerBox");
+  box.style.display="block";
+  let iv=setInterval(()=>{
+    let m=Math.floor(time/60),s=time%60;
+    box.innerText=(m<10?"0"+m:m)+":"+(s<10?"0"+s:s);
+    if(time===300){box.classList.add("warn");alert("⚠️ Only 5 minutes remaining!");}
+    time--;
+    if(time<0){clearInterval(iv);autoSubmit();}
+  },1000);
+}
+function autoSubmit(){if(document.fullscreenElement)document.exitFullscreen();endTest();}
+
+// QUESTION BANK
+function getDefaultQ(cat){
+  let bank={
+    "Verbal Ability":[
+      {q:"Synonym of Happy",o:["Sad","Joyful","Angry","Cry"],a:1},
+      {q:"Antonym of Big",o:["Large","Huge","Small","Wide"],a:2},
+      {q:"Plural of Child",o:["Childs","Children","Childes","Child"],a:1},
+      {q:"Which is a Verb?",o:["Run","Blue","Table","Chair"],a:0},
+      {q:"Correct tense?",o:["I eat","I ate","I eating","I eats"],a:1},
+      {q:"Synonym of Fast",o:["Quick","Slow","Late","Stop"],a:0},
+      {q:"Antonym of Hot",o:["Warm","Cold","Heat","Fire"],a:1},
+      {q:"Correct sentence",o:["He go","He goes","He going","He gone"],a:1},
+      {q:"She ___ playing",o:["is","are","am","be"],a:0},
+      {q:"Correct spelling",o:["Receive","Recieve","Receeve","Receve"],a:0}
+    ],
+    "Algebra":[
+      {q:"2+3=?",o:["4","5","6","7"],a:1},{q:"5×2=?",o:["10","12","8","15"],a:0},
+      {q:"10-4=?",o:["5","6","7","4"],a:1},{q:"x+2=5, x=?",o:["2","3","4","5"],a:1},
+      {q:"3²=?",o:["6","9","12","3"],a:1},{q:"√16=?",o:["2","4","8","6"],a:1},
+      {q:"7+8=?",o:["14","15","16","13"],a:1},{q:"9÷3=?",o:["2","3","4","1"],a:1},
+      {q:"4×4=?",o:["8","12","16","14"],a:2},{q:"6+7=?",o:["12","13","14","11"],a:1}
+    ],
+    "Series & Sequence":[
+      {q:"2,4,8,?",o:["10","12","16","18"],a:2},{q:"3,9,27,?",o:["30","81","18","54"],a:1},
+      {q:"5,10,20,?",o:["30","35","40","50"],a:2},{q:"7,14,28,?",o:["30","56","60","40"],a:1},
+      {q:"1,1,2,3,5,?",o:["6","7","8","9"],a:2},{q:"10,20,40,?",o:["60","80","100","120"],a:1},
+      {q:"6,12,24,?",o:["36","48","60","72"],a:1},{q:"9,18,36,?",o:["45","54","72","81"],a:2},
+      {q:"2,6,18,?",o:["36","54","72","108"],a:1},{q:"4,8,16,?",o:["20","24","32","40"],a:2}
+    ],
+    "Assessment":[
+      {q:"2+3=?",o:["4","5","6","7"],a:1},{q:"5×2=?",o:["10","12","8","15"],a:0},
+      {q:"7+8=?",o:["14","15","16","13"],a:1},{q:"√16=?",o:["2","4","8","6"],a:1},
+      {q:"10-4=?",o:["5","6","7","4"],a:1},{q:"1,1,2,3,5,?",o:["6","7","8","9"],a:2},
+      {q:"6,12,24,?",o:["36","48","60","72"],a:1},{q:"4×4=?",o:["8","12","16","14"],a:2},
+      {q:"9÷3=?",o:["2","3","4","1"],a:1},{q:"10,20,40,?",o:["60","80","100","120"],a:1},
+      {q:"Synonym of 'Happy'",o:["Sad","Joyful","Cry","Angry"],a:1},{q:"Antonym of 'Big'",o:["Large","Small","Huge","Wide"],a:1},
+      {q:"Synonym of 'Fast'",o:["Quick","Slow","Late","Stop"],a:0},{q:"Plural of 'Child'",o:["Childs","Children","Childes","Child"],a:1},
+      {q:"Which is a Verb?",o:["Run","Blue","Table","Chair"],a:0},{q:"Correct tense?",o:["I eat","I ate","I eating","I eats"],a:1},
+      {q:"3²=?",o:["6","9","12","3"],a:1},{q:"Series: 2,4,8,?",o:["10","12","16","18"],a:2},
+      {q:"Series: 3,9,27,?",o:["30","81","18","54"],a:1},{q:"Series: 5,10,20,?",o:["30","35","40","50"],a:2}
+    ]
+  };
+  return bank[cat]||[];
+}
+
+let qBank=JSON.parse(localStorage.getItem("questionBank"))||{};
+let rawQ=isAssessment?(qBank["Assessment"]||getDefaultQ("Assessment")).slice(0,20):(qBank[topic]||getDefaultQ(topic));
+
+function shuffle(arr){let a=[...arr];for(let i=a.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+let questions=[],correctAnswers=[];
+if(isAssessment&&settings.shuffleQ!==false){
+  let sk="shuffledOrder_"+reg;
+  let existing=localStorage.getItem(sk);
+  if(existing){
+    let order=JSON.parse(existing);
+    questions=order.map(i=>rawQ[i]);
+    correctAnswers=order.map(i=>rawQ[i].a);
+  } else {
+    let indices=[...Array(rawQ.length).keys()];
+    let shuffled=shuffle(indices);
+    localStorage.setItem(sk,JSON.stringify(shuffled));
+    questions=shuffled.map(i=>rawQ[i]);
+    correctAnswers=shuffled.map(i=>rawQ[i].a);
+  }
+} else {
+  questions=rawQ;
+  correctAnswers=rawQ.map(q=>q.a);
+}
+
+document.getElementById("title").innerText=isAssessment?"📝 Assessment Test":topic;
+let current=0;
+let letters=["A","B","C","D"];
+
+function loadNumbers(){
+  let html="";
+  for(let i=0;i<questions.length;i++){
+    let cls="qbox"+(i===current?" active":"")+(answers[i]!==undefined?" saved":"");
+    html+=`<div class="${cls}" onclick="goQ(${i})">${i+1}</div>`;
+  }
+  document.getElementById("numbers").innerHTML=html;
+}
+function loadQ(){
+  let q=questions[current];
+  document.getElementById("qNum").innerText=`Question ${current+1} of ${questions.length}`;
+  document.getElementById("question").innerText=q.q;
+  document.getElementById("options").innerHTML=q.o.map((opt,i)=>`
+    <div class="option ${answers[current]===i?'selected':''}" onclick="selectAns(${i})">
+      <div class="opt-letter">${letters[i]}</div>${opt}
+    </div>`).join('');
+  updateBottom();loadNumbers();
+}
+function selectAns(i){answers[current]=i;localStorage.setItem(answerKey,JSON.stringify(answers));loadQ();}
+function nextQ(){if(current<questions.length-1){current++;loadQ();}}
+function prevQ(){if(current>0){current--;loadQ();}}
+function goQ(i){current=i;loadQ();}
+function updateBottom(){
+  document.getElementById("saved").innerText=Object.keys(answers).length;
+  document.getElementById("remain").innerText=questions.length-Object.keys(answers).length;
+}
+
+function endTest(){
+  if(document.fullscreenElement) document.exitFullscreen();
+  if(isAssessment){
+    let users=JSON.parse(localStorage.getItem("users"))||{"714524205005":{name:"Balaji"},"714524205053":{name:"Vicky"},"714524205027":{name:"Ismail"},"714524205041":{name:"Sakthivel"}};
+    let name=(users[reg]||{}).name||"User";
+    let score=0;
+    for(let i=0;i<questions.length;i++){if(answers[i]===correctAnswers[i])score++;}
+    let attempted=Object.keys(answers).length;
+    let board=JSON.parse(localStorage.getItem("leaderboard"))||[];
+    board=board.filter(u=>u.name!==name);
+    board.push({name,score,attempted});
+    localStorage.setItem("leaderboard",JSON.stringify(board));
+    // Mark as taken — one time only
+    localStorage.setItem("assessTaken_"+reg,"yes");
+    // Score history
+    let hist=JSON.parse(localStorage.getItem("scoreHistory_"+reg))||[];
+    hist.push({topic:"Assessment",score,total:20,attempted,time:new Date().toLocaleString()});
+    localStorage.setItem("scoreHistory_"+reg,JSON.stringify(hist));
+    // Cleanup
+    localStorage.removeItem(answerKey);
+    localStorage.removeItem("allowTest");
+    localStorage.removeItem("mode");
+    localStorage.removeItem("shuffledOrder_"+reg);
+    location.href="dashboard.html";
+  } else {
+    // Practice — save per-user progress
+    let pct=Math.floor((Object.keys(answers).length/questions.length)*100);
+    localStorage.setItem("p"+currentTopic+"_done_"+reg,pct);
+    let score=0;
+    questions.forEach((q,i)=>{if(answers[i]===q.a)score++;});
+    let hist=JSON.parse(localStorage.getItem("scoreHistory_"+reg))||[];
+    hist.push({topic,score,total:questions.length,time:new Date().toLocaleString()});
+    localStorage.setItem("scoreHistory_"+reg,JSON.stringify(hist));
+    localStorage.removeItem(answerKey);
+    location.href="aptitude.html";
+  }
+}
+loadQ();
+</script>
+</body>
+</html>

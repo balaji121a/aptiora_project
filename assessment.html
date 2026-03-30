@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Assessment</title>
+</head>
+
+<body style="font-family:Poppins; text-align:center; margin-top:100px;">
+
+<h2>Assessment Test</h2>
+<p>Click below to start the secure assessment.</p>
+
+<button onclick="startTest()" style="padding:10px 20px; background:#3b82f6; color:white; border:none; border-radius:6px; cursor:pointer;">Start Assessment</button>
+
+<script>
+function startTest(){
+  localStorage.setItem("mode", "assessment");
+  window.location.href = "code.html";
+}
+</script>
+
+</body>
+</html>

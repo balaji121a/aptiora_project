@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Profile</title>
+
+<style>
+  body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    background: linear-gradient(-45deg, #667eea, #764ba2, #6dd5ed, #2193b0);
+    background-size: 400% 400%;
+    animation: gradientMove 8s ease infinite;
+    color: white;
+  }
+
+  @keyframes gradientMove {
+    0%{background-position:0% 50%;}
+    50%{background-position:100% 50%;}
+    100%{background-position:0% 50%;}
+  }
+
+  canvas {
+    position: fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    z-index:1;
+  }
+
+  .card {
+    position: relative;
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(12px);
+    padding: 30px;
+    border-radius: 15px;
+    width: 320px;
+    z-index:10;
+    box-shadow: 0 0 25px rgba(0,0,0,0.3);
+  }
+
+  h2 {
+    text-align: center;
+  }
+
+  p {
+    margin: 10px 0;
+  }
+</style>
+
+</head>
+
+<body>
+
+<canvas id="particles"></canvas>
+
+<div class="card">
+  <h2>Student Profile</h2>
+
+  <p><b>Name:</b> <span id="name"></span></p>
+  <p><b>Register No:</b> <span id="reg"></span></p>
+  <p><b>Department:</b> IT</p>
+  <p><b>Year:</b> 2024 - 2028</p>
+</div>
+
+<script>
+// ================= PROFILE DATA =================
+let reg = localStorage.getItem("username");
+
+let users = {
+  "714524205005": "Balaji",
+  "714524205053": "Vicky",
+  "714524205027": "Ismail",
+  "714524205041": "Sakthivel"
+};
+
+document.getElementById("reg").innerText = reg;
+document.getElementById("name").innerText = users[reg] || "Unknown";
+
+
+// ================= PARTICLES =================
+const canvas = document.getElementById('particles');
+const ctx = canvas.getContext('2d');
+
+let w = canvas.width = window.innerWidth;
+let h = canvas.height = window.innerHeight;
+
+const particles = [];
+const particleCount = 60;
+const maxDistance = 120;
+
+function random(min,max){ return Math.random()*(max-min)+min; }
+
+class Particle {
+  constructor(){
+    this.x = random(0,w);
+    this.y = random(0,h);
+    this.radius = random(2,5);
+    this.speedX = random(-0.5,0.5);
+    this.speedY = random(-0.5,0.5);
+    this.alpha = random(0.3,0.8);
+  }
+
+  draw(){
+    ctx.beginPath();
+    ctx.arc(this.x,this.y,this.radius,0,Math.PI*2);
+    ctx.fillStyle = `rgba(255,255,255,${this.alpha})`;
+    ctx.fill();
+  }
+
+  update(){
+    this.x += this.speedX;
+    this.y += this.speedY;
+
+    if(this.x<0) this.x=w;
+    if(this.x>w) this.x=0;
+    if(this.y<0) this.y=h;
+    if(this.y>h) this.y=0;
+
+    this.draw();
+  }
+}
+
+for(let i=0;i<particleCount;i++){
+  particles.push(new Particle());
+}
+
+function drawLines(){
+  for(let i=0;i<particles.length;i++){
+    for(let j=i+1;j<particles.length;j++){
+      let dx = particles[i].x - particles[j].x;
+      let dy = particles[i].y - particles[j].y;
+      let dist = Math.sqrt(dx*dx + dy*dy);
+
+      if(dist<maxDistance){
+        ctx.beginPath();
+        ctx.strokeStyle = `rgba(255,255,255,${0.2*(1-dist/maxDistance)})`;
+        ctx.lineWidth = 1;
+        ctx.moveTo(particles[i].x,particles[i].y);
+        ctx.lineTo(particles[j].x,particles[j].y);
+        ctx.stroke();
+      }
+    }
+  }
+}
+
+function animate(){
+  ctx.clearRect(0,0,w,h);
+  particles.forEach(p=>p.update());
+  drawLines();
+  requestAnimationFrame(animate);
+}
+
+animate();
+
+window.addEventListener('resize', ()=>{
+  w = canvas.width = window.innerWidth;
+  h = canvas.height = window.innerHeight;
+});
+</script>
+
+</body>
+</html>

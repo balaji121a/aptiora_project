@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Leaderboard — APTIORA</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Poppins',sans-serif;min-height:100vh;display:flex;justify-content:center;align-items:flex-start;padding:20px;
+  background:linear-gradient(-45deg,#667eea,#764ba2,#6dd5ed,#2193b0);background-size:400% 400%;animation:bg 8s ease infinite;}
+@keyframes bg{0%{background-position:0% 50%;}50%{background-position:100% 50%;}100%{background-position:0% 50%;}}
+canvas{position:fixed;inset:0;z-index:1;pointer-events:none;}
+.container{position:relative;z-index:10;width:100%;max-width:700px;padding:28px;background:rgba(255,255,255,0.15);backdrop-filter:blur(15px);border-radius:24px;box-shadow:0 8px 30px rgba(0,0,0,0.3);animation:up 0.7s ease;margin-top:10px;}
+@keyframes up{from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:translateY(0);}}
+.title{text-align:center;font-size:24px;font-weight:800;margin-bottom:20px;color:white;}
+table{width:100%;border-collapse:collapse;color:white;}
+th{padding:10px 12px;opacity:0.7;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;}
+td{padding:14px 12px;text-align:center;border-top:1px solid rgba(255,255,255,0.15);font-size:14px;}
+.rank-1{background:linear-gradient(90deg,rgba(250,204,21,0.3),rgba(251,191,36,0.2));border-left:3px solid #facc15;}
+.rank-2{background:linear-gradient(90deg,rgba(229,231,235,0.2),rgba(209,213,219,0.1));border-left:3px solid #e5e7eb;}
+.rank-3{background:linear-gradient(90deg,rgba(245,158,11,0.2),rgba(180,83,9,0.1));border-left:3px solid #f59e0b;}
+.avatar{width:34px;height:34px;border-radius:50%;background:white;color:#6366f1;display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;margin-right:8px;vertical-align:middle;}
+.btn{margin-top:12px;width:100%;padding:13px;border:none;border-radius:12px;background:white;color:#6366f1;font-weight:700;cursor:pointer;transition:0.3s;font-family:'Poppins',sans-serif;font-size:14px;}
+.btn:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(255,255,255,0.3);}
+.btn-back{background:rgba(255,255,255,0.2);color:white;}
+.btn-back:hover{background:rgba(255,255,255,0.3);}
+.empty{text-align:center;color:rgba(255,255,255,0.7);padding:30px;font-size:14px;}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div class="container">
+  <div class="title">🏆 Assessment Leaderboard</div>
+  <table>
+    <thead><tr><th>Rank</th><th>Name</th><th>Score</th><th>Attempted</th></tr></thead>
+    <tbody id="lbBody"></tbody>
+  </table>
+  <div id="emptyMsg" class="empty" style="display:none;">No assessment results yet.</div>
+  <button class="btn" onclick="goBack()">⬅ Back to Dashboard</button>
+  <button class="btn" onclick="getCertificate()">📜 Get My Certificate</button>
+</div>
+
+<script>
+let board=JSON.parse(localStorage.getItem("leaderboard"))||[];
+board.sort((a,b)=>b.score-a.score);
+let reg=localStorage.getItem("username");
+
+function getUsers(){return JSON.parse(localStorage.getItem("users"))||{"714524205005":{name:"Balaji"},"714524205053":{name:"Vicky"},"714524205027":{name:"Ismail"},"714524205041":{name:"Sakthivel"}};}
+let users=getUsers();
+let currentUser=(users[reg]||{}).name||"User";
+
+let body=document.getElementById("lbBody");
+let medals=["🥇","🥈","🥉"];
+let rankClasses=["rank-1","rank-2","rank-3"];
+
+if(board.length===0){
+  document.getElementById("emptyMsg").style.display="block";
+} else {
+  board.forEach((u,i)=>{
+    let row=document.createElement("tr");
+    if(i<3) row.className=rankClasses[i];
+    row.innerHTML=`
+      <td>${medals[i]||i+1}</td>
+      <td><span class="avatar">${u.name.charAt(0)}</span>${u.name}</td>
+      <td><strong>${u.score}/20</strong></td>
+      <td>${u.attempted||u.score}/20</td>`;
+    row.style.opacity=0;row.style.transform="translateY(16px)";
+    setTimeout(()=>{row.style.transition="0.5s";row.style.opacity=1;row.style.transform="translateY(0)";},i*150);
+    body.appendChild(row);
+  });
+  launchConfetti();
+}
+
+function goBack(){location.href="dashboard.html";}
+
+function getCertificate(){
+  let userEntry=board.find(u=>u.name===currentUser);
+  if(!userEntry){alert("⚠️ You have not taken the Assessment yet!");return;}
+  let rank=board.findIndex(u=>u.name===currentUser)+1;
+  localStorage.setItem("rank",rank);
+  localStorage.setItem("cert_score",userEntry.score);
+  localStorage.setItem("cert_attempted",userEntry.attempted||userEntry.score);
+  location.href="certificate.html";
+}
+
+function launchConfetti(){
+  for(let i=0;i<80;i++){
+    let c=document.createElement("div");
+    c.style.cssText=`position:fixed;left:${Math.random()*100}%;top:-10px;width:8px;height:8px;background:hsl(${Math.random()*360},100%,60%);z-index:999;border-radius:2px;`;
+    document.body.appendChild(c);
+    c.animate([{transform:"translateY(0) rotate(0)"},{transform:`translateY(${innerHeight}px) rotate(720deg)`}],{duration:3000+Math.random()*2000});
+    setTimeout(()=>c.remove(),5000);
+  }
+}
+
+// Particles
+const cv=document.getElementById("c"),ctx=cv.getContext("2d");
+let w=cv.width=innerWidth,h=cv.height=innerHeight;
+let P=Array.from({length:50},()=>({x:Math.random()*w,y:Math.random()*h,r:Math.random()*3,dx:(Math.random()-.5),dy:(Math.random()-.5)}));
+function draw(){
+  ctx.clearRect(0,0,w,h);
+  P.forEach(p=>{p.x+=p.dx;p.y+=p.dy;if(p.x<0||p.x>w)p.dx*=-1;if(p.y<0||p.y>h)p.dy*=-1;
+    ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle="rgba(255,255,255,0.6)";ctx.fill();});
+  requestAnimationFrame(draw);
+}
+draw();
+addEventListener("resize",()=>{w=cv.width=innerWidth;h=cv.height=innerHeight;});
+</script>
+</body>
+</html>

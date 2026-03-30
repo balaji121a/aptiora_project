@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Secure Access - APTIORA</title>
+
+<style>
+body{
+  margin:0;
+  font-family:Poppins;
+  height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  overflow:hidden;
+  background: linear-gradient(-45deg,#667eea,#764ba2,#6dd5ed,#2193b0);
+  background-size:400% 400%;
+  animation:bg 8s infinite;
+}
+
+@keyframes bg{
+  0%{background-position:0% 50%;}
+  50%{background-position:100% 50%;}
+  100%{background-position:0% 50%;}
+}
+
+/* FIX KEYBOARD ISSUE */
+#particles{
+  position:fixed;
+  width:100%;
+  height:100%;
+  pointer-events:none;
+}
+
+/* GLASS CARD */
+.card{
+  background:rgba(255,255,255,0.12);
+  backdrop-filter:blur(15px);
+  padding:30px;
+  border-radius:20px;
+  text-align:center;
+  color:white;
+  z-index:10;
+  box-shadow:0 0 40px rgba(0,0,0,0.3);
+}
+
+/* OTP BOX */
+.otp{
+  display:flex;
+  gap:10px;
+  justify-content:center;
+  margin-top:15px;
+}
+
+.otp input{
+  width:40px;
+  height:50px;
+  text-align:center;
+  font-size:20px;
+  border:none;
+  border-radius:8px;
+  background:rgba(255,255,255,0.2);
+  color:white;
+  outline:none;
+}
+
+/* BUTTON */
+button{
+  margin-top:20px;
+  padding:10px 20px;
+  border:none;
+  border-radius:8px;
+  background:#3b82f6;
+  color:white;
+  cursor:pointer;
+}
+
+.success{
+  display:none;
+  color:#22c55e;
+  font-size:18px;
+  margin-top:10px;
+}
+
+#error{
+  color:red;
+  display:none;
+}
+</style>
+
+</head>
+
+<body>
+
+<canvas id="particles"></canvas>
+
+<div class="card">
+  <h2 id="title">Initializing...</h2>
+
+  <!-- OTP -->
+  <div class="otp">
+    <input maxlength="1">
+    <input maxlength="1">
+    <input maxlength="1">
+    <input maxlength="1">
+    <input maxlength="1">
+    <input maxlength="1">
+  </div>
+
+  <button onclick="checkCode()">Enter</button>
+
+  <p id="error">Wrong Code ❌</p>
+  <div class="success" id="success">Access Granted ✅</div>
+</div>
+
+<!-- SOUND -->
+<audio id="successSound">
+  <source src="https://www.soundjay.com/buttons/sounds/button-3.mp3">
+</audio>
+
+<script>
+
+// 🔥 HACKER TEXT EFFECT
+let text="🔐 Secure Authentication";
+let i=0;
+function type(){
+  if(i<text.length){
+    document.getElementById("title").innerHTML+=text[i];
+    i++;
+    setTimeout(type,50);
+  }
+}
+type();
+
+// 🔢 OTP AUTO MOVE
+let inputs=document.querySelectorAll(".otp input");
+
+inputs.forEach((inp,index)=>{
+  inp.addEventListener("input",()=>{
+    if(inp.value && index<5){
+      inputs[index+1].focus();
+    }
+  });
+
+  inp.addEventListener("keydown",(e)=>{
+    if(e.key==="Backspace" && !inp.value && index>0){
+      inputs[index-1].focus();
+    }
+  });
+});
+
+// 🔐 CHECK CODE
+function checkCode(){
+  let code="";
+  inputs.forEach(i=>code+=i.value);
+
+  let err=document.getElementById("error");
+  let success=document.getElementById("success");
+
+  let settings=JSON.parse(localStorage.getItem("adminSettings"))||{};
+  let correctCode=settings.secureCode||"123456";
+  if(code===correctCode){
+    err.style.display="none";
+
+    // sound
+    document.getElementById("successSound").play();
+
+    // success show
+    success.style.display="block";
+
+    // confetti 🎉
+    launchConfetti();
+
+    localStorage.setItem("allowTest","yes");
+
+    setTimeout(()=>{
+      window.location.href="test.html";
+    },1500);
+
+  }else{
+    err.style.display="block";
+  }
+}
+
+// 🎉 CONFETTI
+function launchConfetti(){
+  for(let i=0;i<100;i++){
+    let conf=document.createElement("div");
+    conf.style.position="fixed";
+    conf.style.width="6px";
+    conf.style.height="6px";
+    conf.style.background="white";
+    conf.style.top=Math.random()*100+"%";
+    conf.style.left=Math.random()*100+"%";
+    conf.style.zIndex=999;
+    conf.style.opacity=1;
+    conf.style.transition="1s";
+    document.body.appendChild(conf);
+
+    setTimeout(()=>{
+      conf.style.transform="translateY(200px)";
+      conf.style.opacity=0;
+    },100);
+
+    setTimeout(()=>conf.remove(),1200);
+  }
+}
+
+// 🔥 PARTICLES WITH LINES
+const canvas=document.getElementById("particles");
+const ctx=canvas.getContext("2d");
+
+let w=canvas.width=window.innerWidth;
+let h=canvas.height=window.innerHeight;
+
+let particles=[];
+
+for(let i=0;i<60;i++){
+  particles.push({
+    x:Math.random()*w,
+    y:Math.random()*h,
+    dx:(Math.random()-0.5),
+    dy:(Math.random()-0.5)
+  });
+}
+
+function animate(){
+  ctx.clearRect(0,0,w,h);
+
+  particles.forEach(p=>{
+    p.x+=p.dx;
+    p.y+=p.dy;
+
+    if(p.x<0||p.x>w) p.dx*=-1;
+    if(p.y<0||p.y>h) p.dy*=-1;
+
+    ctx.beginPath();
+    ctx.arc(p.x,p.y,2,0,Math.PI*2);
+    ctx.fillStyle="white";
+    ctx.fill();
+  });
+
+  // lines
+  for(let i=0;i<particles.length;i++){
+    for(let j=i+1;j<particles.length;j++){
+      let dx=particles[i].x-particles[j].x;
+      let dy=particles[i].y-particles[j].y;
+      let dist=Math.sqrt(dx*dx+dy*dy);
+
+      if(dist<120){
+        ctx.beginPath();
+        ctx.strokeStyle="rgba(255,255,255,"+(1-dist/120)*0.3+")";
+        ctx.moveTo(particles[i].x,particles[i].y);
+        ctx.lineTo(particles[j].x,particles[j].y);
+        ctx.stroke();
+      }
+    }
+  }
+
+  requestAnimationFrame(animate);
+}
+
+animate();
+
+</script>
+
+</body>
+</html>

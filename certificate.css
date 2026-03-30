@@ -1,0 +1,197 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Poppins:wght@400;500;600&display=swap');
+
+body.center {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: radial-gradient(ellipse at top, #1a1a2e, #16213e, #0f3460);
+  font-family: 'Poppins', sans-serif;
+  padding: 20px;
+}
+
+/* ===== TOP 3 CERTIFICATE ===== */
+.card {
+  width: 820px;
+  max-width: 95vw;
+  padding: 0;
+  background: #fff;
+  color: #222;
+  border-radius: 16px;
+  text-align: center;
+  position: relative;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  overflow: hidden;
+}
+
+/* Gold gradient header for rank 1 */
+.card.rank-1 { border: 10px solid #d4af37; }
+.card.rank-2 { border: 10px solid #94a3b8; }
+.card.rank-3 { border: 10px solid #cd7f32; }
+.card.participate { border: 10px solid #6366f1; }
+
+.cert-header {
+  padding: 30px 40px 20px;
+  position: relative;
+}
+.card.rank-1 .cert-header { background: linear-gradient(135deg, #f6d365, #fda085, #f6d365); }
+.card.rank-2 .cert-header { background: linear-gradient(135deg, #bdc3c7, #95a5a6, #bdc3c7); }
+.card.rank-3 .cert-header { background: linear-gradient(135deg, #cd7f32, #e8a838, #cd7f32); }
+.card.participate .cert-header { background: linear-gradient(135deg, #6366f1, #8b5cf6, #6366f1); }
+
+.cert-header h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 38px;
+  font-weight: 900;
+  letter-spacing: 5px;
+  color: white;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  margin: 0;
+}
+.cert-header h2::before,
+.cert-header h2::after {
+  content: "✦";
+  font-size: 20px;
+  margin: 0 12px;
+  opacity: 0.8;
+}
+
+.medal-display {
+  font-size: 80px;
+  display: block;
+  margin: -20px auto 10px;
+  position: relative;
+  z-index: 2;
+  filter: drop-shadow(0 4px 12px rgba(0,0,0,0.3));
+  animation: float 3s ease-in-out infinite;
+}
+@keyframes float {
+  0%,100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.cert-body { padding: 10px 50px 30px; }
+.cert-body p { font-size: 17px; color: #555; margin: 6px 0; }
+.cert-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 46px;
+  font-weight: 700;
+  color: #1a1a1a;
+  letter-spacing: 2px;
+  margin: 14px 0;
+  display: inline-block;
+  border-bottom: 3px solid;
+  padding-bottom: 8px;
+}
+.card.rank-1 .cert-name { border-color: #d4af37; }
+.card.rank-2 .cert-name { border-color: #94a3b8; }
+.card.rank-3 .cert-name { border-color: #cd7f32; }
+.card.participate .cert-name { border-color: #6366f1; }
+
+.rank-badge {
+  display: inline-block;
+  padding: 8px 24px;
+  border-radius: 30px;
+  font-size: 18px;
+  font-weight: 700;
+  margin: 10px 0;
+  color: white;
+}
+.card.rank-1 .rank-badge { background: linear-gradient(135deg,#d4af37,#f6e27a); }
+.card.rank-2 .rank-badge { background: linear-gradient(135deg,#94a3b8,#cbd5e1); }
+.card.rank-3 .rank-badge { background: linear-gradient(135deg,#cd7f32,#e8a838); }
+.card.participate .rank-badge { background: linear-gradient(135deg,#6366f1,#8b5cf6); }
+
+.cert-msg { font-size: 16px; color: #444; font-style: italic; margin: 8px 0 14px; }
+.cert-meta {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin: 14px 0;
+}
+.meta-pill {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  padding: 6px 18px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+}
+
+/* Dashed inner border */
+.card::before {
+  content: "";
+  position: absolute;
+  top: 14px; left: 14px; right: 14px; bottom: 14px;
+  border: 1.5px dashed rgba(0,0,0,0.1);
+  border-radius: 10px;
+  pointer-events: none;
+}
+
+.cert-footer {
+  display: flex;
+  justify-content: space-around;
+  padding: 0 50px 24px;
+  margin-top: 10px;
+}
+.sig-block { text-align: center; }
+.sig-line { border-top: 1.5px solid #999; width: 160px; margin: 0 auto 6px; }
+.sig-label { font-size: 12px; color: #888; }
+
+/* Star corners */
+.corner-star {
+  position: absolute;
+  font-size: 28px;
+  color: rgba(0,0,0,0.08);
+}
+.corner-star.tl { top: 20px; left: 20px; }
+.corner-star.tr { top: 20px; right: 20px; }
+.corner-star.bl { bottom: 20px; left: 20px; }
+.corner-star.br { bottom: 20px; right: 20px; }
+
+/* ===== PARTICIPATE CERTIFICATE ===== */
+.card.participate .cert-header h2 { color: white; }
+
+/* ===== BUTTONS ===== */
+.btn-row {
+  text-align: center;
+  margin-top: 24px;
+  display: flex;
+  gap: 14px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.action-btn {
+  padding: 13px 30px;
+  border: none;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.3s;
+  font-family: 'Poppins', sans-serif;
+}
+.dl-btn { background: linear-gradient(135deg,#6366f1,#8b5cf6); color: white; box-shadow: 0 4px 16px rgba(99,102,241,0.35); }
+.dl-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(99,102,241,0.4); }
+.dl-btn:disabled { background: #ccc; box-shadow: none; cursor: not-allowed; transform: none; }
+.back-btn { background: rgba(255,255,255,0.15); color: white; border: 1.5px solid rgba(255,255,255,0.3); }
+.back-btn:hover { background: rgba(255,255,255,0.25); transform: translateY(-2px); }
+
+/* NOT ELIGIBLE */
+.not-eligible { text-align: center; color: white; font-family: 'Poppins',sans-serif; padding: 60px 30px; }
+.not-eligible h2 { font-size: 28px; margin-bottom: 12px; }
+.not-eligible p { font-size: 15px; opacity: 0.85; margin: 8px 0; }
+
+/* RESPONSIVE */
+@media (max-width: 860px) {
+  .card { border-width: 6px; }
+  .cert-header h2 { font-size: 26px; }
+  .cert-name { font-size: 32px; }
+  .medal-display { font-size: 60px; }
+  .cert-body { padding: 10px 24px 24px; }
+  .cert-footer { padding: 0 24px 20px; }
+}

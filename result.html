@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Programming Result</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      text-align: center;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      overflow: hidden;
+    }
+
+    .box {
+      margin-top: 100px;
+      background: rgba(255,255,255,0.15);
+      padding: 30px;
+      border-radius: 12px;
+      display: inline-block;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+      animation: fadeIn 1s ease;
+    }
+
+    button {
+      padding: 10px 20px;
+      margin: 10px;
+      border: none;
+      border-radius: 6px;
+      background: white;
+      cursor: pointer;
+    }
+
+    /* 🎉 CONFETTI */
+    .confetti {
+      position: fixed;
+      width: 10px;
+      height: 10px;
+      background: yellow;
+      top: -10px;
+      animation: fall 3s linear infinite;
+    }
+
+    @keyframes fall {
+      to {
+        transform: translateY(100vh) rotate(360deg);
+      }
+    }
+
+    @keyframes fadeIn {
+      from {opacity: 0; transform: scale(0.8);}
+      to {opacity: 1; transform: scale(1);}
+    }
+
+  </style>
+</head>
+<body>
+
+<div class="box">
+  <h1>Programming Result 💻</h1>
+
+  <h2 id="score"></h2>
+  <h3 id="time"></h3>
+  <h3 id="username"></h3>
+
+  <button onclick="goLeaderboard()">Leaderboard 🏆</button>
+  <button onclick="goCertificate()">Certificate 🎓</button>
+</div>
+
+<!-- 🔊 SOUND -->
+<audio id="sound" src="https://www.soundjay.com/buttons/sounds/button-3.mp3"></audio>
+
+<script>
+let score = Number(localStorage.getItem("pscore")) || 0;
+let time = Number(localStorage.getItem("ptime")) || 0;
+let username = localStorage.getItem("username") || "Guest";
+
+document.getElementById("score").innerText = "Score: " + score;
+document.getElementById("time").innerText = "Time Left: " + time + " sec";
+document.getElementById("username").innerText = "Name: " + username;
+
+// 🎉 CONFETTI FUNCTION
+function createConfetti(){
+  for(let i=0; i<30; i++){
+    let c = document.createElement("div");
+    c.classList.add("confetti");
+    c.style.left = Math.random()*100 + "vw";
+    c.style.background = "hsl(" + Math.random()*360 + ",100%,50%)";
+    c.style.animationDuration = (Math.random()*3+2)+"s";
+    document.body.appendChild(c);
+  }
+}
+
+// 🔥 AUTO SAVE
+function saveScore(){
+  let data = JSON.parse(localStorage.getItem("pleaderboard")) || [];
+
+  data.push({
+    name: username,
+    score: score,
+    time: time
+  });
+
+  data.sort((a,b)=>{
+    if(b.score === a.score){
+      return b.time - a.time;
+    }
+    return b.score - a.score;
+  });
+
+  data = data.slice(0,5);
+
+  localStorage.setItem("pleaderboard", JSON.stringify(data));
+
+  // 🔊 PLAY SOUND
+  document.getElementById("sound").play();
+
+  // 🎉 SHOW CONFETTI
+  createConfetti();
+}
+
+// 🔥 AUTO CALL
+window.onload = function(){
+  saveScore();
+}
+
+function goLeaderboard(){
+  window.location.href = "leaderboard.html";
+}
+
+function goCertificate(){
+  window.location.href = "certificate.html";
+}
+</script>
+
+</body>
+</html>
