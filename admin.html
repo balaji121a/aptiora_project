@@ -1137,9 +1137,11 @@ function openEditUser(reg){
   let u=getUsers()[reg];
   showModal("✏️ Edit User",`
     <div class="form-group"><label class="form-label">Register No</label><input class="form-input" id="e_reg" value="${reg}" placeholder="New Register No"></div>
+    <div class="form-group"><label class="form-label">Register No</label><input class="form-input" id="e_reg" value="${reg}"></div>
     <div class="form-group"><label class="form-label">Name</label><input class="form-input" id="e_name" value="${u.name}"></div>
     <div class="form-group"><label class="form-label">Password</label><input class="form-input" id="e_pass" value="${u.password}"></div>
     <div class="form-group"><label class="form-label">Department</label><input class="form-input" id="e_dept" value="${u.dept||'IT'}"></div>
+    <div class="form-group"><label class="form-label">Email (for OTP)</label><input class="form-input" type="email" id="e_email" value="${u.email||''}" placeholder="student@email.com"></div>
     <div class="form-group"><label class="form-label">Batch</label><input class="form-input" id="e_batch" value="${u.batch||'2024-2028'}"></div>
     <div style="display:flex;gap:10px;margin-top:8px;">
       <button class="btn btn-success" onclick="saveEditUser('${reg}')" style="flex:1;">💾 Save</button>
@@ -1150,9 +1152,11 @@ function openEditUser(reg){
 function saveEditUser(reg){
   let users=getUsers();
   let newReg=document.getElementById("e_reg").value.trim();
+  let email=document.getElementById("e_email")?document.getElementById("e_email").value.trim():(users[reg].email||"");
   let userData={
     name:document.getElementById("e_name").value,
     password:document.getElementById("e_pass").value,
+    email:email,
     dept:document.getElementById("e_dept").value,
     batch:document.getElementById("e_batch").value,
     active:users[reg].active!==false
