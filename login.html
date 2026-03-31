@@ -84,18 +84,16 @@ canvas{position:fixed;inset:0;z-index:1;pointer-events:none;}
       <input class="otp-box" maxlength="1">
     </div>
     <div class="otp-timer" id="otpTimer">Resend in 60s</div>
-    <!-- Step 1: OTP -->
     <div id="otpStep1">
       <button class="btn" onclick="verifyOTP()" style="margin-bottom:10px;">✅ Verify OTP</button>
-      <p style="color:#fca5a5;font-size:12px;margin-top:8px;display:none;" id="otpErr"></p>
+      <p style="color:#fca5a5;font-size:12px;margin-top:6px;display:none;" id="otpErr"></p>
     </div>
-    <!-- Step 2: New Password -->
     <div id="otpStep2" style="display:none;">
       <p style="color:#86efac;font-size:13px;margin-bottom:12px;">✅ OTP Verified! Set new password:</p>
       <input type="password" id="newPassInp" placeholder="New password" style="width:100%;padding:11px 14px;border-radius:10px;border:1.5px solid rgba(255,255,255,0.25);background:rgba(255,255,255,0.1);color:white;font-size:14px;font-family:Poppins;outline:none;margin-bottom:10px;">
       <input type="password" id="newPassConfirm" placeholder="Confirm password" style="width:100%;padding:11px 14px;border-radius:10px;border:1.5px solid rgba(255,255,255,0.25);background:rgba(255,255,255,0.1);color:white;font-size:14px;font-family:Poppins;outline:none;margin-bottom:12px;">
-      <button class="btn" onclick="saveNewPassword()" style="margin-bottom:10px;">🔑 Reset Password</button>
-      <p style="color:#fca5a5;font-size:12px;margin-top:4px;display:none;" id="passErr"></p>
+      <button class="btn" onclick="saveNewPassword()" style="margin-bottom:8px;">🔑 Reset Password</button>
+      <p style="color:#fca5a5;font-size:12px;display:none;" id="passErr"></p>
     </div>
     <button onclick="closeOTPModal()" style="background:none;border:none;color:rgba(255,255,255,0.4);cursor:pointer;font-size:13px;font-family:Poppins;margin-top:8px;">Cancel</button>
   </div>
@@ -233,18 +231,17 @@ function openForgot(){
   }
   let email=users[reg].email||"";
   if(!email){
-    document.getElementById("s_err").innerText="No email registered! Contact admin to add your email.";
+    document.getElementById("s_err").innerText="No email registered! Contact admin.";
     document.getElementById("s_err").style.display="block";return;
   }
   forgotReg=reg;
   let otp=Math.floor(100000+Math.random()*900000).toString();
   localStorage.setItem("resetOTP_"+reg,otp);
   localStorage.setItem("resetOTP_expiry",Date.now()+5*60000);
-  // Mask email for display
-  let masked=email.replace(/(.{2})(.*)(@.*)/,(a,b,c,d)=>b+"****"+d);
+  // Show masked email in modal
+  let masked=email.replace(/(.{2})(.*)(@.*)/,(a,b,cc,d)=>b+"****"+d);
   document.getElementById("otpDesc").innerText="📧 OTP sent to: "+masked;
-  // Save OTP in console for admin testing
-  console.log("OTP:", otp);
+  console.log("OTP for testing:",otp);
   openOTPModal();
 }
 function openOTPModal(){
@@ -277,9 +274,8 @@ function verifyOTP(){
   let stored=localStorage.getItem("resetOTP_"+forgotReg);
   let expiry=parseInt(localStorage.getItem("resetOTP_expiry")||0);
   let errEl=document.getElementById("otpErr");
-  if(Date.now()>expiry){errEl.innerText="⏰ OTP expired!";errEl.style.display="block";return;}
+  if(Date.now()>expiry){errEl.innerText="OTP expired!";errEl.style.display="block";return;}
   if(entered===stored){
-    // Show new password section inside modal
     document.getElementById("otpStep1").style.display="none";
     document.getElementById("otpStep2").style.display="block";
     document.getElementById("newPassInp").focus();
@@ -301,7 +297,6 @@ function saveNewPassword(){
   closeOTPModal();
   document.getElementById("s_ok").innerText="✅ Password reset! Please login.";
   document.getElementById("s_ok").style.display="block";
-  document.getElementById("s_pass").value="";
 }
 
 function logActivity(name,action){
